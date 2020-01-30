@@ -46,11 +46,15 @@ module shift_register #(parameter size=3, parameter data_width=32) (
             end
             else
             begin
+                // shift out
+                shift_out_reg = data[size - 1];
                 // shift 
                 for (j = (size - 2); j < -1; j = j - 1)
                 begin
-                    
+                    data[j + 1] = data[j];
                 end
+                // shift in
+                data[0] = shift_in;
             end
         end
     end
