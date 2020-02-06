@@ -7,6 +7,7 @@ module adder_tree#(parameter WIDTH = 32, parameter INPUTS = 9)(
     );
     
     reg[INPUTS+WIDTH-1:0] temp_data;
+    integer i;
     always @(*)
     begin
         for(i = 0; i < INPUTS; i = i + 1)
