@@ -3,60 +3,57 @@
 // shift register
 // shifts right 1 position every clock cycle
 // shifts right 3 positions if selected
-module shift_register #(parameter size=3, parameter data_width=32) (
-    input [(data_width - 1):0] shift_in,  // value to be shifted in
-    input three_shift,  // select for 3-shift
+module shift_register #(parameter SIZE=3, parameter DATA_WIDTH=32) (
+    input [(DATA_WIDTH - 1):0] shift_in,  // value to be shifted in
     input clock,
     input reset,    // reset all registers to 0
-    output [(data_width - 1):0] shift_out,    // value shifted out
-    output [(data_width - 1):0] data_out [(size - 1):0]    // value of each register
+    output [(DATA_WIDTH - 1):0] shift_out,    // value shifted out
+    output [(SIZE*DATA_WIDTH)-1:0] data_out    // value of each register
     );
     
-    // internal registers to hold the data values
-    reg [(data_width - 1):0] data [(size - 1):0];
-    reg [(data_width - 1):0] shift_out_reg;
+    integer i;
     
-    // connect shift out to value
-    assign shift_out = shift_out_reg;
+    // Register reg
+    reg [(DATA_WIDTH - 1):0] data [(SIZE - 1):0];   // internal registers to hold the data values
+    reg [(DATA_WIDTH - 1):0] shift_out_reg;
     
-    // assign all the outputs to the vaule of the data registers
+    // Non-register reg
+    
+    
+    // Assignments
+    assign shift_out = shift_out_reg;   // connect shift out to value
+    // assign assign the data registers to the flattened outputs
+    genvar geni;
     generate
-        genvar i;
-        for (i = 0; i < size; i = i + 1)
+        for (geni = 0; geni < SIZE; geni = geni + 1)
         begin
-            assign data_out[i] = data[i];
+            assign data_out[((DATA_WIDTH*(geni + 1)) - 1):(DATA_WIDTH*geni)] = data[geni];
         end
     endgenerate
-
-    integer j;
+    
     always @(posedge clock)
     begin
-        if (reset == 1'b1)  // reset condition
+        shift_out_reg <= data[SIZE - 1];    // shift out the most significant register
+        for (i = (SIZE - 1); i > 0; i = i - 1) // shift the rest of the registers
         begin
-            for (j = 0; j < size; j = i + 1)
-            begin
-                data[j] = 1'b0;
-            end
-            shift_out_reg = 0;
+            data[i] <= data[i - 1];
         end
-        else
+        data[0] <= shift_in;    // shift the new value in
+    end
+    
+    // Combinational logic
+    always @(*)
+    begin
+        // asynchronous reset
+        if (reset == 1'b1)
         begin
-            if (three_shift == 1'b1)    // three shift condition
+            // clear all internal data registers
+            for (i = 0; i < SIZE; i = i + 1)
             begin
-            end
-            else
-            begin
-                // shift out
-                shift_out_reg = data[size - 1];
-                // shift 
-                for (j = (size - 2); j < -1; j = j - 1)
-                begin
-                    data[j + 1] = data[j];
-                end
-                // shift in
-                data[0] = shift_in;
-            end
+                data[i] <= 0;
+            end            
         end
     end
+    
 
 endmodule
