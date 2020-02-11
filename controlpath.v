@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-
+/*
 module controlpath
 #(
     parameter
@@ -43,3 +43,4 @@ module controlpath
        
     end
 endmodule
+/*
