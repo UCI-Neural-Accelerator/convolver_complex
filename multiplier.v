@@ -15,8 +15,7 @@ module multiplier #(parameter DATA_WIDTH=32, parameter KERNEL_SIZE=3) (
     generate
         for (i = 0; i < (KERNEL_SIZE**2); i = i + 1)
         begin
-            assign result[i*(DATA_WIDTH-1) +: DATA_WIDTH-1] = weights[i*(DATA_WIDTH-1) +: DATA_WIDTH-1] * pixel_data[i*(DATA_WIDTH-1) +: DATA_WIDTH-1];
-            //assign result[(DATA_WIDTH * (i + 1)) - 1:DATA_WIDTH * i] = weights[(DATA_WIDTH * (i + 1)) - 1:DATA_WIDTH * i] * pixel_data[(DATA_WIDTH * (i + 1)) - 1:DATA_WIDTH * i];
+            assign result[i*DATA_WIDTH +: DATA_WIDTH] = $signed(weights[i*DATA_WIDTH +: DATA_WIDTH]) * $signed(pixel_data[i*DATA_WIDTH +: DATA_WIDTH]);
         end
     endgenerate
     
