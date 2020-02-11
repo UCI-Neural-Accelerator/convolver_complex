@@ -21,6 +21,9 @@
 
 
 module tb_shift_register #(parameter SIZE=3, parameter DATA_WIDTH=32);
+    parameter CLK_PERIOD = 20;
+    parameter RESET_DURATION = 100;
+
     // inputs
     reg [(DATA_WIDTH - 1):0] r_shift_in;
     reg r_clock;
@@ -40,28 +43,31 @@ module tb_shift_register #(parameter SIZE=3, parameter DATA_WIDTH=32);
         );
         
     // generate clock
-    always
-    begin
-        r_clock = 1'b0;
-        #10;
-        r_clock = 1'b1;
-        #10;
-    end
-    
-    // data generation
     initial
     begin
-        r_reset = 1'b0;
+        r_clock = 1'd0;
+        forever #(CLK_PERIOD / 2) r_clock = ~r_clock;
     end
     
+    // reset
+    initial
+    begin
+        r_reset = 1'd1;
+        #(RESET_DURATION);
+        r_reset = 1'd0;
+        #(RESET_DURATION);
+        r_reset = 1'd1;
+    end
+    
+    // data generation    
     always
     begin
         r_shift_in = 1;
-        #20;
+        @(negedge r_reset)
+        @(negedge r_clock)
         r_shift_in = 0;
-        #20;
+        @(negedge r_clock)
         r_shift_in = 0;
-        #20;
     end
     
 endmodule
