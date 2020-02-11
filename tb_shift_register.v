@@ -20,9 +20,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module tb_shift_register #(parameter SIZE=3, parameter DATA_WIDTH=32);
+module tb_shift_register();
+    parameter SIZE = 3;
+    parameter DATA_WIDTH = 32;
     parameter CLK_PERIOD = 20;
     parameter RESET_DURATION = 100;
+    parameter TEST_ITERATIONS = 10;
 
     // inputs
     reg [(DATA_WIDTH - 1):0] r_shift_in;
@@ -33,7 +36,7 @@ module tb_shift_register #(parameter SIZE=3, parameter DATA_WIDTH=32);
     wire [(SIZE*DATA_WIDTH) - 1:0] w_data_out;
     
     // instantiate a shift register with the specified parameters
-    shift_register #(.SIZE(SIZE), .DATA_WIDTH(DATA_WIDTH)) psr 
+    shift_register #(.SIZE(SIZE), .DATA_WIDTH(DATA_WIDTH)) uut 
         (
             .shift_in(r_shift_in),
             .clock(r_clock),
@@ -52,22 +55,41 @@ module tb_shift_register #(parameter SIZE=3, parameter DATA_WIDTH=32);
     // reset
     initial
     begin
-        r_reset = 1'd1;
-        #(RESET_DURATION);
         r_reset = 1'd0;
         #(RESET_DURATION);
         r_reset = 1'd1;
+        #(RESET_DURATION);
+        r_reset = 1'd0;
     end
     
-    // data generation    
-    always
+    // data generation
+    integer i; 
+    initial
     begin
-        r_shift_in = 1;
+        r_shift_in = 0;
+        
+        // wait for reset
         @(negedge r_reset)
-        @(negedge r_clock)
-        r_shift_in = 0;
-        @(negedge r_clock)
-        r_shift_in = 0;
+        
+        // repeat test multiple times
+        for (i = 0; i < TEST_ITERATIONS; i = i + 1)
+        begin
+            // generate random input to shift in
+            r_shift_in = $random;
+            
+            // wait for shift
+            @(negedge r_clock);
+            
+            // check if the correct value was shifted in
+            if (w_data_out[DATA_WIDTH - 1:0] == r_shift_in)
+            begin
+                $display("Sucessfully shifted %h\n", r_shift_in);
+            end
+            else
+            begin
+                $display("Failed to shift %h\n", r_shift_in);
+            end
+        end
     end
     
 endmodule

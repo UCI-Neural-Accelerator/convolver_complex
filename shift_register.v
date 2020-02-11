@@ -2,7 +2,6 @@
 
 // shift register
 // shifts right 1 position every clock cycle
-// shifts right 3 positions if selected
 module shift_register #(parameter SIZE=3, parameter DATA_WIDTH=32) (
     input [(DATA_WIDTH - 1):0] shift_in,  // value to be shifted in
     input clock,
@@ -22,7 +21,7 @@ module shift_register #(parameter SIZE=3, parameter DATA_WIDTH=32) (
     
     // Assignments
     assign shift_out = shift_out_reg;   // connect shift out to value
-    // assign assign the data registers to the flattened outputs
+    // assign the data registers to the flattened outputs
     genvar geni;
     generate
         for (geni = 0; geni < SIZE; geni = geni + 1)
@@ -31,29 +30,27 @@ module shift_register #(parameter SIZE=3, parameter DATA_WIDTH=32) (
         end
     endgenerate
     
-    always @(posedge clock)
-    begin
-        shift_out_reg <= data[SIZE - 1];    // shift out the most significant register
-        for (i = (SIZE - 1); i > 0; i = i - 1) // shift the rest of the registers
-        begin
-            data[i] <= data[i - 1];
-        end
-        data[0] <= shift_in;    // shift the new value in
-    end
-    
-    // Combinational logic
-    always @(*)
+    // Synchronous logic and asynchronous reset
+    always @(posedge clock or posedge reset)
     begin
         // asynchronous reset
-        if (reset == 1'b1)
+        if (reset)
         begin
             // clear all internal data registers
             for (i = 0; i < SIZE; i = i + 1)
             begin
                 data[i] <= 0;
-            end            
+            end
+        end
+        else    // normal operation
+        begin
+            shift_out_reg <= data[SIZE - 1];    // shift out the most significant register
+            for (i = (SIZE - 1); i > 0; i = i - 1) // shift the rest of the registers
+            begin
+                data[i] <= data[i - 1];
+            end
+            data[0] <= shift_in;    // shift the new value in 
         end
     end
-    
 
 endmodule
