@@ -10,6 +10,7 @@ GOALS:
 - Weight register - J
 - Fixed point multiplier - I
 - Fixed point adder - T
+- Adjust adder for 5x5 kernel
 - Create datapath module
 - Generate data
 - Test datapath
