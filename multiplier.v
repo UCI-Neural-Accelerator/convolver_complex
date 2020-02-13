@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module multiplier #(parameter DATA_WIDTH=16, FRAC_BIT = 8, parameter KERNEL_SIZE=5) (
+module multiplier #(parameter DATA_WIDTH=16, parameter FRAC_BIT = 8, parameter KERNEL_SIZE=5) (
     // Inputs
     input signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights,
     input signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] pixel_data,
