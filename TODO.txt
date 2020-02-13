@@ -1,0 +1,16 @@
+2/13/2020
+GOALS:
+- Working datapath that produces correct output values
+	- generate data for evaluation
+	- connect modules to form datapath
+	- Finish weight register design and testbench
+	- Add fixed point for adder, multiplier
+	- Create FSM for control
+
+- Weight register - J
+- Fixed point multiplier - I
+- Fixed point adder - T
+- Adjust adder for 5x5 kernel
+- Create datapath module
+- Generate data
+- Test datapath
