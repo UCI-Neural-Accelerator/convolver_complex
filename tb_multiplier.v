@@ -21,8 +21,8 @@
 
 
 module tb_multiplier ();
-    parameter DATA_WIDTH = 32;
-    parameter KERNEL_SIZE = 3;
+    parameter DATA_WIDTH = 16;
+    parameter KERNEL_SIZE = 5;
     parameter TEST_ITERATIONS = 10;
     parameter CLK_PERIOD = 20;
     
@@ -49,6 +49,8 @@ module tb_multiplier ();
 //    assign r_pixel_data = b;
 
     integer i, j;
+    reg signed [DATA_WIDTH*2-1:0] mult_temp;
+    reg signed [DATA_WIDTH - 1:0] split_temp;
     initial
     begin
         // test iterations
@@ -64,7 +66,9 @@ module tb_multiplier ();
                 #(CLK_PERIOD);
                 
                 // check output
-                if (w_result[j*DATA_WIDTH +: DATA_WIDTH] == r_weights[j*DATA_WIDTH +: DATA_WIDTH] * r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH])
+                mult_temp = r_weights[j*DATA_WIDTH +: DATA_WIDTH] * r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH];
+                split_temp = {mult_temp[DATA_WIDTH*2 - 1], mult_temp[(3*DATA_WIDTH/4)-1:(DATA_WIDTH/2)]};
+                if (w_result[j*DATA_WIDTH +: DATA_WIDTH] == split_temp)
                 begin
                     $display("Case: %d\nMultiplcation %d out of %d successful\n", i, (j + 1), (KERNEL_SIZE**2));
                 end

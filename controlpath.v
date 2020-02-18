@@ -39,7 +39,7 @@ module controlpath
     always @(*) begin
        state_nxt = STANDBY;
        
-       case(state)
+       //case(state)
        
     end
 endmodule
