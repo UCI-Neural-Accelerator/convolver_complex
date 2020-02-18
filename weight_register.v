@@ -1,38 +1,58 @@
 `timescale 1ns / 1ps
 
 
-module weight_register #(parameter bit_width = 32, parameter N = 9) (
+module weight_register #(parameter DATA_WIDTH = 16, parameter N = 9) (
+    // inputs
+    input reset,
+    input clock,
     input write,
-    input [bit_width-1:0] weight_in,
-    output [bit_width-1:0] weight_out [N-1:0]
+    input [(N*DATA_WIDTH)-1:0] weight_write,
+    
+    // outputs
+    output [(N*DATA_WIDTH)-1:0] weight_read
     );
     
-    //temp register to hold input value 
-    reg [bit_width-1:0] tmp;
-    reg [bit_width-1:0] weight_reg [N-1:0];
+    // Register reg
+    reg [DATA_WIDTH-1:0] weight_reg [N-1:0];
     
-    integer i;
+    // Non-register reg
     
-    //assign temperatory weights to output
-    genvar j;
+    // assign the read to the value of the register
+    genvar geni;
     generate
-        for (j = 0; j < N; j = j+1)
-            begin
-                assign weight_out[j] = weight_reg[j];
-            end
+        for (geni = 0; geni < N; geni = geni + 1)
+        begin
+            assign weight_read[((DATA_WIDTH*(geni + 1)) - 1):(DATA_WIDTH*geni)] = weight_reg[geni];
+        end
     endgenerate
     
-    //when writing, save into temperatory weight register
-    always @ (write)
+    // Synchronous logic and asynchronous reset
+    integer i;
+    always @(posedge clock or posedge reset)
+    begin
+        // asynchronous reset
+        if (reset)
         begin
-            for (i = 0; i < N; i = i+1) 
-                begin
-                    tmp[i] = weight_in;
-                    weight_reg[i] = tmp;
-                end
-                
+            // clear all internal data registers
+            for (i = 0; i < N; i = i + 1)
+            begin
+                weight_reg[i] <= 0;
+            end
         end
-    endmodule
+        else    // normal operation
+        begin
+            // write new values to registers
+            if (write)
+            begin
+                for (i = 0; i < N; i = i + 1)
+                begin
+                    weight_reg[i] <= weight_write[i*DATA_WIDTH +: DATA_WIDTH];
+                end
+            end
+        end
+    end
+    
+endmodule
     
 
 
