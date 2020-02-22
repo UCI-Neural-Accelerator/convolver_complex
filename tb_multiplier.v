@@ -67,14 +67,16 @@ module tb_multiplier ();
                 
                 // check output
                 mult_temp = r_weights[j*DATA_WIDTH +: DATA_WIDTH] * r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH];
-                split_temp = {mult_temp[DATA_WIDTH*2 - 1], mult_temp[(3*DATA_WIDTH/4)-1:(DATA_WIDTH/2)]};
+                split_temp = mult_temp[DATA_WIDTH+7:8];
                 if (w_result[j*DATA_WIDTH +: DATA_WIDTH] == split_temp)
                 begin
-                    $display("Case: %d\nMultiplcation %d out of %d successful\n", i, (j + 1), (KERNEL_SIZE**2));
+                    $display("Case: %d\n%b*%b=%b\nMultiplcation %d out of %d successful\n", i, r_weights[j*DATA_WIDTH +: DATA_WIDTH],
+                    r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH], mult_temp, (j + 1), (KERNEL_SIZE**2));
                 end
                 else
                 begin
-                    $display("Case: %d\nMultiplcation %d out of %d failed\n", i, (j + 1), (KERNEL_SIZE**2));
+                    $display("Case: %d\n%b*%b=%b\nMultiplcation %d out of %d failed\n", i, r_weights[j*DATA_WIDTH +: DATA_WIDTH],
+                    r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH], mult_temp, (j + 1), (KERNEL_SIZE**2));
                 end
             end 
         end
