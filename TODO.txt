@@ -7,10 +7,10 @@ GOALS:
 	- Add fixed point for adder, multiplier
 	- Create FSM for control
 
-- Weight register - J
+X Weight register - J
 - Fixed point multiplier - I
-- Fixed point adder - T
-- Adjust adder for 5x5 kernel
-- Create datapath module
-- Generate data
+X Fixed point adder - T
+X Adjust adder for 5x5 kernel - T
+- Create datapath module - T
+- Generate data - J
 - Test datapath

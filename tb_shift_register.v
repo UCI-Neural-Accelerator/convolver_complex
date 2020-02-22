@@ -69,7 +69,7 @@ module tb_shift_register();
         r_shift_in = 0;
         
         // wait for reset
-        @(negedge r_reset)
+        @(negedge r_reset);
         
         // repeat test multiple times
         for (i = 0; i < TEST_ITERATIONS; i = i + 1)
