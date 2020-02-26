@@ -6,34 +6,57 @@ module datapath #(parameter DATA_WIDTH = 16, parameter KERNEL_SIZE = 5) (
     // inputs
     input clk, reset,
     input three_shift,
-    input bias,
+    input [DATA_WIDTH - 1:0] bias,
     input weight_write, write,
+    input signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights, pixel_data,
     // outputs
     output signed [DATA_WIDTH-1:0] add_result
     );    
     
+//    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_0;
+//    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_1;
+//    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_2;
     
     wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] m_result;
-    wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] pixel_data;    
-    wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights;     
+    //wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] pixel_data;    
+    //wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights;     
+    
+    // concatenate shift register outputs for multiplier unit
+//    assign pixel_data = {w_data_out_0, w_data_out_1, w_data_out_2};
     
     // don't know how to pass parameters into instantiated modules
     // not to sure how to connect the shift registers, help jigar or ian?
-    shift_register shift_register_0 (
-            .shift_in(r_shift_in),
-            .clock(clk),
-            .reset(reset),
-            .shift_out(w_shift_out),
-            .data_out(w_data_out)
-        );
-    
-    weight_register weight_register_0 (
-            .reset(reset),
-            .clock(clk),
-            .write(write),
-            .weight_write(weight_write),
-            .weight_read(weights)
-        );
+//    shift_register shift_register_0 (
+//            .shift_in(),
+//            .clock(clk),
+//            .reset(reset),
+//            .shift_out(w_shift_out),
+//            .data_out(w_data_out_0)
+//        );
+        
+//    shift_register shift_register_1 (
+//            .shift_in(w_shift_out),
+//            .clock(clk),
+//            .reset(reset),
+//            .shift_out(w_shift_out_1),
+//            .data_out(w_data_out_1)
+//        );
+        
+//     shift_register shift_register_2 (
+//            .shift_in(w_shift_out_1),
+//            .clock(clk),
+//            .reset(reset),
+//            .shift_out(),
+//            .data_out(w_data_out_2)
+//        );
+         
+//    weight_register weight_register_0 (
+//            .reset(reset),
+//            .clock(clk),
+//            .write(write),
+//            .weight_write(weight_write),
+//            .weight_read(weights)
+//        );
         
      multiplier multiplier_0 (
             .weights(weights),
