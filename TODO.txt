@@ -8,9 +8,10 @@ GOALS:
 	- Create FSM for control
 
 X Weight register - J
-- Fixed point multiplier - I
+X Fixed point multiplier - I
+- Fixed point multiplier testbench - 
 X Fixed point adder - T
 X Adjust adder for 5x5 kernel - T
-- Create datapath module - T
-- Generate data - J
+X Create datapath module - T
+X Generate data - J
 - Test datapath
