@@ -13,8 +13,8 @@ module convolver_complex(
         .three_shift(three_shift),
         .weight_write(weight_write));
         
-    control control_unit(
+    /*control control_path(
         .reset(reset),
         .three_shift(three_shift),
-        .weight_write(weight_write));
+        .weight_write(weight_write));*/
 endmodule
