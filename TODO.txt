@@ -9,7 +9,7 @@ GOALS:
 
 X Weight register - J
 X Fixed point multiplier - I
-- Fixed point multiplier testbench - 
+X Fixed point multiplier testbench - I & J
 X Fixed point adder - T
 X Adjust adder for 5x5 kernel - T
 X Create datapath module - T
