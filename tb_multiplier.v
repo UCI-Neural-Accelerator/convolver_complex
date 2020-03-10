@@ -4,13 +4,14 @@ module tb_multiplier ();
     parameter KERNEL_SIZE = 5;
     parameter TEST_ITERATIONS = 10;
     parameter CLK_PERIOD = 20;
+    parameter FRAC_BIT = 8;
     
     // Inputs
-    reg [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_weights;
-    reg [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_pixel_data;
+    reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_weights;
+    reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_pixel_data;
     
     // Output
-    wire [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] w_result;
+    wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] w_result;
     
     
     // Instantiate the module
@@ -22,7 +23,7 @@ module tb_multiplier ();
     );    
 
     integer i, j;
-    reg signed [DATA_WIDTH - 1:0] a, b, result;
+    reg signed [DATA_WIDTH - 1:0] a, b;
     reg signed [DATA_WIDTH*2-1:0] mult_temp;
     reg signed [DATA_WIDTH - 1:0] split_temp;
 
@@ -35,29 +36,28 @@ module tb_multiplier ();
             begin
                 // drive inputs
                 r_weights[j*DATA_WIDTH +: DATA_WIDTH]    = $random;
-                r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH] = $random;                
-                
-                // delay
-                #(CLK_PERIOD);
+                r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH] = $random;
                 
                 // check output
                 a = r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH];
                 b = r_weights[j*DATA_WIDTH +: DATA_WIDTH];
-                result = w_result[j*DATA_WIDTH +: DATA_WIDTH];
-                mult_temp = r_weights[j*DATA_WIDTH +: DATA_WIDTH] * r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH];
-                split_temp = mult_temp[DATA_WIDTH+7:8];
-                $display("Hardware output: %b\tExpected output: %b\n", w_result[j*DATA_WIDTH +: DATA_WIDTH], split_temp);
+                mult_temp = a * b;
+                split_temp = mult_temp[DATA_WIDTH+FRAC_BIT-1:FRAC_BIT];
+                
+                // delay
+                #(CLK_PERIOD);
+                
 
-                //if (w_result[j*DATA_WIDTH +: DATA_WIDTH] == split_temp)
-                //begin
-                    //$display("Case: %d\n%b*%b=%b\nMultiplcation %d out of %d successful\n", i+1, r_weights[j*DATA_WIDTH +: DATA_WIDTH],
-                    //r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH], mult_temp, (j + 1), (KERNEL_SIZE**2));
-                //end
-                //else
-               // begin
-                   // $display("Case: %d\n%b*%b=%b\nMultiplcation %d out of %d failed\n", i, r_weights[j*DATA_WIDTH +: DATA_WIDTH],
-                   // r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH], mult_temp, (j + 1), (KERNEL_SIZE**2));
-                //end
+                if (w_result[j*DATA_WIDTH +: DATA_WIDTH] == split_temp)
+                begin
+                    $display("Case: %d\n%b*%b=%b\nMultiplcation %d out of %d successful\n", i+1, r_weights[j*DATA_WIDTH +: DATA_WIDTH],
+                    r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH], mult_temp, (j + 1), (KERNEL_SIZE**2));
+                end
+                else
+                begin
+                   $display("Case: %d\n%b*%b=%b\nMultiplcation %d out of %d failed\n", i, r_weights[j*DATA_WIDTH +: DATA_WIDTH],
+                   r_pixel_data[j*DATA_WIDTH +: DATA_WIDTH], mult_temp, (j + 1), (KERNEL_SIZE**2));
+                end
             end 
         end
     end

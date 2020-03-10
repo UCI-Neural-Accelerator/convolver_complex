@@ -32,6 +32,8 @@ module tb_datapath();
     reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_weights;
     reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_pixel_data;
     reg signed [DATA_WIDTH - 1:0] bias;
+    reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] rand_weight, rand_pixel;
+    reg signed [DATA_WIDTH - 1:0] rand_bias;
     
     // Output
     wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] m_result;
@@ -78,23 +80,23 @@ module tb_datapath();
     );    
 
 
- 
-
     
     integer i;
-    always @ (*) 
-        begin
+    initial 
+    begin
     
-    bias = 0;    
-    for ( i = 0; i < KERNEL_SIZE**2; i = i + 1)
+        // initialize bias
+        bias = 0;    
+        
+        for ( i = 0; i < KERNEL_SIZE**2; i = i + 1)
         begin
             r_weights[i*DATA_WIDTH +: DATA_WIDTH] = 16'b00000001_00000000;
             r_pixel_data[i*DATA_WIDTH +: DATA_WIDTH] = 16'b00000010_00000000;
         end
-        
-        
-
-        
+    
+            
+    
+            
         if (final_result == 16'd50)
         begin
             $display(" Successfully added\n");
@@ -103,8 +105,10 @@ module tb_datapath();
         else
         begin
             $display("Failed to add\n");
-
+    
         end
-
+    
     end
+    
+    
 endmodule
