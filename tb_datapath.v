@@ -32,6 +32,8 @@ module tb_datapath();
     reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_weights;
     reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_pixel_data;
     reg signed [DATA_WIDTH - 1:0] bias;
+    reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] rand_weight, rand_pixel;
+    reg signed [DATA_WIDTH - 1:0] rand_bias;
     
     // Output
     wire signed [DATA_WIDTH - 1:0] final_result;
@@ -110,6 +112,8 @@ module tb_datapath();
             $display("Failed to add. Result: %d\n", final_result * sf);
 
         end
-
+    
     end
+    
+    
 endmodule
