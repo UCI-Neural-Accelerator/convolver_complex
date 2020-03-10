@@ -27,7 +27,7 @@ module tb_datapath();
     parameter CLK_PERIOD = 20;
     parameter TEST_ITERATIONS = 10;
     parameter sf = 2.0 ** -8.0;
-
+    parameter FRAC_BIT = 8;
     // Inputs
     reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_weights;
     reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_pixel_data;
@@ -36,10 +36,20 @@ module tb_datapath();
     reg signed [DATA_WIDTH - 1:0] rand_bias;
     
     // Output
-    wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] m_result;
     wire signed [DATA_WIDTH - 1:0] final_result;
-    
-    
+   
+    datapath #(.DATA_WIDTH(DATA_WIDTH),.KERNEL_SIZE(KERNEL_SIZE), .FRAC_BIT(FRAC_BIT)) datapath (
+        .clk(),
+        .reset(),
+        .three_shift(),
+        .bias(bias),
+        .weight_write(),
+        .write(),
+        .weights(r_weights),
+        .pixel_data(r_pixel_data),
+        .add_result(final_result)
+    );
+    /*
     // instantiate the adder tree
     adder_tree #(.DATA_WIDTH(DATA_WIDTH)) adder 
     (
@@ -78,34 +88,29 @@ module tb_datapath();
         .pixel_data(r_pixel_data),
         .result(m_result)
     );    
-
-
-    
+    */
     integer i;
-    initial 
-    begin
+    initial
+        begin
     
-        // initialize bias
-        bias = 0;    
-        
-        for ( i = 0; i < KERNEL_SIZE**2; i = i + 1)
+    bias = 16'h0000;    
+    
+    for ( i = 0; i < KERNEL_SIZE**2; i = i + 1)
         begin
             r_weights[i*DATA_WIDTH +: DATA_WIDTH] = 16'b00000001_00000000;
             r_pixel_data[i*DATA_WIDTH +: DATA_WIDTH] = 16'b00000010_00000000;
         end
-    
-            
-    
-            
+        
+        
         if (final_result == 16'd50)
         begin
-            $display(" Successfully added\n");
+            $display(" Successfully added. Result: %d\n", final_result * sf);
        
         end
         else
         begin
-            $display("Failed to add\n");
-    
+            $display("Failed to add. Result: %d\n", final_result * sf);
+
         end
     
     end
