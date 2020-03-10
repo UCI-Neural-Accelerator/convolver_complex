@@ -6,7 +6,7 @@
 // Create Date: 02/26/2020 11:29:58 AM
 // Design Name: 
 // Module Name: tb_datapath
-// Project Name: 
+// Project Name: Neural Processor
 // Target Devices: 
 // Tool Versions: 
 // Description: 

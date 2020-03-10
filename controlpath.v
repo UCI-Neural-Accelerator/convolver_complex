@@ -42,5 +42,16 @@ module controlpath
        //case(state)
        
     end
-endmodule
-/*
+endmodule*/
+
+module controlpath 
+#(parameter KERNEL_SIZE = 5
+)
+(
+    input clk,
+    input reset,
+       
+    
+    output en
+);
+    
