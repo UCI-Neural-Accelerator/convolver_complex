@@ -44,14 +44,45 @@ module controlpath
     end
 endmodule*/
 
-module controlpath 
-#(parameter KERNEL_SIZE = 5
-)
-(
-    input clk,
-    input reset,
-       
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 10.03.2020 11:20:34
+// Design Name: 
+// Module Name: controlpath
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, parameter KERNEL_SIZE = 5) (
+        input clk,
+        input reset,
+        
+        output reg enable
+    );
     
-    output en
-);
+    reg [5:0] count = 0;
     
+    always@(posedge clk)
+    begin
+        count = count + 1;
+        if (count == 6'd24)
+            enable = 1;
+        else if (count == 6'd49) begin
+            enable = 0;
+            count = 6'd0;
+        end
+    end   
+   
+endmodule
