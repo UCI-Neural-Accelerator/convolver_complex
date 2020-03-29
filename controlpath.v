@@ -1,6 +1,7 @@
 `timescale 1ns / 1ps
 
-/* 
+/* PREVIOUS APPROACH
+
 module controlpath
 #(
     parameter
@@ -45,37 +46,9 @@ module controlpath
     end
 endmodule*/
 
+/* FIRST APPROACH
 
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 10.03.2020 11:20:34
-// Design Name: 
-// Module Name: controlpath
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-
-module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, parameter KERNEL_SIZE = 5) (
-        input clk,
-        input reset,
-        
-        output reg enable
-    );
-    
-	/*
-    reg [5:0] count = 0;
+reg [5:0] count = 0;
     
     always@(posedge clk)
     begin
@@ -87,36 +60,52 @@ module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, param
             count = 6'd0;
         end
     end
-	*/
-	
-    reg [4:0] count_conv = 5'd0; //Counter of number of convolutions
-    reg [2:0] count_shift_row = 3'd0; //Counter until kernel size when changing row
-    
-    always@(posedge clk)
-    begin
-        if (count_conv <= (IMAGE_SIZE-2*(KERNEL_SIZE/2))) 
-            begin
-                enable = 1;
-                count_conv = count_conv + 1;
-            end
-        else
-            begin
-                enable = 0;
-                count_shift_row = count_shift_row + 1;
-                if (count_shift_row == KERNEL_SIZE)
-                    begin
-                        count_conv = 5'd0;
-                        count_shift_row = 3'd0;
-                    end
-            end
-    end
+*/
 
-/*
+/* ALTERNATIVE APPROACH
+
         else if (count_conv > (IMAGE_SIZE-2*(KERNEL_SIZE/2)) & count_conv <= (IMAGE_SIZE-2*(KERNEL_SIZE/2) + KERNEL_SIZE))
             enable = 0;
             count_conv = count_conv + 1;
         else
             count_conv = 5'd0;   
-*/	
-   
+*/
+
+module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, parameter KERNEL_SIZE = 5) (
+        input clk,
+        input rstn,
+        
+        output reg enable
+    );
+	
+    reg [4:0] count_conv; //Counter of number of convolutions
+    reg [2:0] count_shift_row; //Counter until kernel size when changing row
+    
+    always@(posedge clk or negedge rstn) begin
+        if (~rstn) begin
+            count_conv <= 5'd0;
+            count_shift_row <= 3'd0;
+            enable <= 1'd0;
+        end
+        else begin
+            if (count_conv <= (IMAGE_SIZE-2*(KERNEL_SIZE/2))) begin
+                enable <= 1'd1;
+                count_conv <= count_conv + 'd1;
+                count_shift_row <= 3'd0;
+            end
+            else begin
+               if (count_shift_row == KERNEL_SIZE) begin
+                    count_conv <= 5'd0;
+                    count_shift_row <= 3'd0;
+					enable <= 1'd0;
+               end
+               else begin
+                    enable <= 1'd0;
+                    count_shift_row <= count_shift_row + 'd1;
+                    count_conv <= count_conv;
+                end
+            end
+        end
+    end
+
 endmodule
