@@ -30,6 +30,7 @@ module tb_controlpath();
    
     // Inputs
     reg clk;
+	reg rstn;
     
     // Output
     wire w_enable;
@@ -39,7 +40,7 @@ module tb_controlpath();
     controlpath #(.KERNEL_SIZE(KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH), .IMAGE_SIZE(IMAGE_SIZE)) uut
     (
         .clk(clk),
-        .reset(),
+        .reset(rstn),
         .enable(w_enable)
     );
 
