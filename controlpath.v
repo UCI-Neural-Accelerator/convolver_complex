@@ -71,6 +71,62 @@ reg [5:0] count = 0;
             count_conv = 5'd0;   
 */
 
+/*FSM APPROACH
+
+`timescale 1ns / 1ps
+
+module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, parameter KERNEL_SIZE = 5) (
+        input clk,
+        input rstn,
+        
+        output reg enable
+    );
+    
+    reg [4:0] count_conv; //Counter of number of convolutions
+    reg [2:0] count_shift_row; //Counter until kernel size when changing row
+	
+	reg state;
+	
+	always@(state) begin
+		case(state)
+			1'd0: enable <= 1'd0;
+			1'd1: enable <= 1'd1;
+		endcase
+	end
+
+    always@(posedge clk or negedge rstn) begin
+        if (~rstn) begin
+            count_conv <= 5'd0;
+            count_shift_row <= 3'd0;
+            enable <= 1'd0;
+			state <= 1'd0;
+        end
+        else begin
+			case(state)
+				1'd0: begin
+					count_shift_row <= count_shift_row + 'd1;
+					if (count_shift_row == KERNEL_SIZE) begin
+						count_shift_row <= 3'd0;
+						state <= 1'd1;
+					end
+					else state <= 1'd0;
+				end
+				1'd1: begin
+					count_conv <= count_conv + 'd1;
+					if (count_conv == (IMAGE_SIZE-KERNEL_SIZE+1)) begin
+						count_conv <= 3'd0;
+						state <= 1'd0;
+					end
+					else state <= 1'd1;				
+				end
+			endcase
+		end                
+    end
+
+end module
+
+*/
+
 module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, parameter KERNEL_SIZE = 5) (
         input clk,
         input rstn,
@@ -88,7 +144,7 @@ module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, param
             enable <= 1'd0;
         end
         else begin
-            if (count_conv <= (IMAGE_SIZE-2*(KERNEL_SIZE/2))) begin
+            if (count_conv <= (IMAGE_SIZE-KERNEL_SIZE+1)) begin
                 enable <= 1'd1;
                 count_conv <= count_conv + 'd1;
                 count_shift_row <= 3'd0;
