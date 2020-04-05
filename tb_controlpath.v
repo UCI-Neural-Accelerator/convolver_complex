@@ -40,13 +40,16 @@ module tb_controlpath();
     controlpath #(.KERNEL_SIZE(KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH), .IMAGE_SIZE(IMAGE_SIZE)) uut
     (
         .clk(clk),
-        .reset(rstn),
+        .rstn(rstn),
         .enable(w_enable)
     );
 
     initial
     begin
         clk = 0;
+        rstn = 0;
+        #100
+        rstn = 1;
         forever #20 clk = ~clk;
     end
 
