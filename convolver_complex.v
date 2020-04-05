@@ -1,20 +1,28 @@
 `timescale 1ns / 1ps
 
 module convolver_complex(
-    input clk, reset,  
+    input clk, reset,
     output result
     );
     
-    wire three_shift, weight_write;
-    
+    wire weight_write;    
     datapath datapath_unit(
         .clk(clk),
         .reset(reset),
-        .three_shift(three_shift),
         .weight_write(weight_write));
         
-    /*control control_path(
-        .reset(reset),
-        .three_shift(three_shift),
-        .weight_write(weight_write));*/
+    wire en;
+    controlpath 
+    #( .DATA_WIDTH(16),
+       .IMAGE_SIZE(28),
+       .KERNEL_SIZE(5)
+    ) 
+    control_unit
+    (
+        .clk(clk),
+        .rstn(reset),
+        .enable(en)
+    );  
+     
+        
 endmodule
