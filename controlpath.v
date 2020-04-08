@@ -144,13 +144,13 @@ module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, param
             enable <= 1'd0;
         end
         else begin
-            if (count_conv <= (IMAGE_SIZE-KERNEL_SIZE+1)) begin
+            if (count_conv < (IMAGE_SIZE-KERNEL_SIZE+1)) begin
                 enable <= 1'd1;
                 count_conv <= count_conv + 1'd1;
                 count_shift_row <= 3'd0;
             end
             else begin
-               if (count_shift_row == KERNEL_SIZE-1) begin
+               if (count_shift_row == (KERNEL_SIZE-1)) begin
                     count_conv <= 5'd0;
                     count_shift_row <= 3'd0;
 					enable <= 1'd1;
