@@ -93,16 +93,17 @@ module tb_datapath();
     initial
         begin
     
-    bias = 16'h0000;    
+        bias = 16'h0000;    
     
-    for ( i = 0; i < KERNEL_SIZE**2; i = i + 1)
+        for ( i = 0; i < KERNEL_SIZE**2; i = i + 1)
         begin
             r_weights[i*DATA_WIDTH +: DATA_WIDTH] = 16'b00000001_00000000;
             r_pixel_data[i*DATA_WIDTH +: DATA_WIDTH] = 16'b00000010_00000000;
         end
         
+        #(CLK_PERIOD / 2);        
         
-        if (final_result == 16'd50)
+        if (final_result == 16'h3200)
         begin
             $display(" Successfully added. Result: %d\n", final_result * sf);
        
