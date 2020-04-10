@@ -48,85 +48,6 @@ endmodule*/
 
 /* FIRST APPROACH
 
-reg [5:0] count = 0;
-    
-    always@(posedge clk)
-    begin
-        count = count + 1;
-        if (count == 6'd24)
-            enable = 1;
-        else if (count == 6'd49) begin
-            enable = 0;
-            count = 6'd0;
-        end
-    end
-*/
-
-/* ALTERNATIVE APPROACH
-
-        else if (count_conv > (IMAGE_SIZE-2*(KERNEL_SIZE/2)) & count_conv <= (IMAGE_SIZE-2*(KERNEL_SIZE/2) + KERNEL_SIZE))
-            enable = 0;
-            count_conv = count_conv + 1;
-        else
-            count_conv = 5'd0;   
-*/
-
-/*FSM APPROACH
-
-`timescale 1ns / 1ps
-
-module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, parameter KERNEL_SIZE = 5) (
-        input clk,
-        input rstn,
-        
-        output reg enable
-    );
-    
-    reg [4:0] count_conv; //Counter of number of convolutions
-    reg [2:0] count_shift_row; //Counter until kernel size when changing row
-	
-	reg state;
-	
-	always@(state) begin
-		case(state)
-			1'd0: enable <= 1'd0;
-			1'd1: enable <= 1'd1;
-		endcase
-	end
-
-    always@(posedge clk or negedge rstn) begin
-        if (~rstn) begin
-            count_conv <= 5'd0;
-            count_shift_row <= 3'd0;
-            enable <= 1'd0;
-			state <= 1'd0;
-        end
-        else begin
-			case(state)
-				1'd0: begin
-					count_shift_row <= count_shift_row + 'd1;
-					if (count_shift_row == KERNEL_SIZE) begin
-						count_shift_row <= 3'd0;
-						state <= 1'd1;
-					end
-					else state <= 1'd0;
-				end
-				1'd1: begin
-					count_conv <= count_conv + 'd1;
-					if (count_conv == (IMAGE_SIZE-KERNEL_SIZE+1)) begin
-						count_conv <= 3'd0;
-						state <= 1'd0;
-					end
-					else state <= 1'd1;				
-				end
-			endcase
-		end                
-    end
-
-end module
-
-*/
-
 module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, parameter KERNEL_SIZE = 5) (
         input clk,
         input rstn,
@@ -163,5 +84,83 @@ module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, param
             end
         end
     end
+
+endmodule
+*/
+
+//FSM APPROACH
+
+module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, parameter KERNEL_SIZE = 5) (
+        input wire clk,
+        input wire rstn,
+        
+        output wire enable
+    );
+    
+	
+	reg [4:0] counter;
+	
+	localparam STATE_Initial = 2'd0,
+				STATE_1 = 2'd1,
+				STATE_2 = 2'd2,
+				STATE_3_PlaceHolder = 2'd3;
+
+	reg[1:0] CurrentState;
+	reg[1:0] NextState;
+	
+	
+	/* ALTERNATIVE OUTPUT APPROACH
+	always@( * ) begin
+		enable = 1'd0;
+		case(CurrentState)
+			STATE_1: begin 
+				enable = 1'd1;
+			end
+		endcase
+	end
+	*/
+	
+	assign enable = (CurrentState == STATE_1);
+
+
+    always@(posedge clk or negedge rstn) begin
+        if (~rstn) begin
+			CurrentState <= STATE_Initial;
+			counter <= 5'd0;
+		end
+        else begin
+			CurrentState <= NextState;
+			counter <= counter + 1'd1;
+		end                
+    end
+	
+	
+	always@( * ) begin
+		NextState = CurrentState;
+		case(CurrentState)
+			STATE_Initial: begin
+				if (counter == ((KERNEL_SIZE**2)-1)) begin 
+					NextState = STATE_1;
+					counter = 5'd0;
+				end
+			end
+			STATE_1: begin
+				if (counter == (IMAGE_SIZE-KERNEL_SIZE+1)) begin 
+					NextState = STATE_2;
+					counter = 5'd0;
+				end
+			end
+			STATE_2: begin
+				if (counter == (KERNEL_SIZE-1)) begin 
+					NextState = STATE_1;
+					counter = 5'd0;
+				end
+			end
+			STATE_3_PlaceHolder: begin
+				NextState = STATE_Initial;
+			end
+		endcase
+	end
+
 
 endmodule
