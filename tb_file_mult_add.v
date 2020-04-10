@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module tb_conv_complex();
+module tb_file_mult_add();
 
 parameter BW = 16;
 parameter FRAC_BIT = 8;
