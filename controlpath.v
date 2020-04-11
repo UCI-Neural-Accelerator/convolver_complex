@@ -98,7 +98,8 @@ module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, param
     );
     
 	
-	reg [4:0] counter;
+	reg [6:0] counter;
+	reg [4:0] conv_rows;
 	
 	localparam STATE_Initial = 2'd0,
 				STATE_1 = 2'd1,
@@ -126,7 +127,7 @@ module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, param
     always@(posedge clk or negedge rstn) begin
         if (~rstn) begin
 			CurrentState <= STATE_Initial;
-			counter <= 5'd0;
+			counter <= 7'd0;
 		end
         else begin
 			CurrentState <= NextState;
@@ -139,21 +140,21 @@ module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, param
 		NextState = CurrentState;
 		case(CurrentState)
 			STATE_Initial: begin
-				if (counter == ((KERNEL_SIZE**2)-1)) begin 
+				if (counter == ((KERNEL_SIZE**2+(KERNEL_SIZE-1)*(IMAGE_SIZE-KERNEL_SIZE))-1)) begin 
 					NextState = STATE_1;
-					counter = 5'd0;
+					counter = 7'd0;
 				end
 			end
 			STATE_1: begin
 				if (counter == (IMAGE_SIZE-KERNEL_SIZE+1)) begin 
 					NextState = STATE_2;
-					counter = 5'd0;
+					counter = 7'd0;
 				end
 			end
 			STATE_2: begin
-				if (counter == (KERNEL_SIZE-1)) begin 
+				if (counter == (KERNEL_SIZE)) begin 
 					NextState = STATE_1;
-					counter = 5'd0;
+					counter = 7'd0;
 				end
 			end
 			STATE_3_PlaceHolder: begin
