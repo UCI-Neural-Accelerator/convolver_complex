@@ -17,9 +17,8 @@ reg rstn;
 
 reg signed [DATA_WIDTH-1:0] tmp_pixel;
 
-reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] mult_weights;
-reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] mult_pixel_data;
-wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] mult_result;
+reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights;
+reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] pixel_data;
 
 reg signed [DATA_WIDTH-1:0] adder_bias;
 
@@ -42,11 +41,11 @@ integer tmp;
 integer file;
 integer index;
 initial begin
-    mult_pixel_data = 'd0;
+    pixel_data = 'd0;
     for(index = 0; index < 25; index = index + 1) begin
         file = $fopen("in.txt", "r");
         tmp = $fscan(file, "%d", tmp_pixel);
-        mult_pixel_data[index*DATA_WIDTH +: DATA_WIDTH] = tmp_pixel;
+        pixel_data[index*DATA_WIDTH +: DATA_WIDTH] = tmp_pixel;
         @(negedge clk);
     end
     
@@ -54,6 +53,21 @@ initial begin
     
 end
 
+// instantiate the datapath with the loaded inputs
+datapath #(.DATA_WIDTH(DATA_WIDTH), .KERNEL_SIZE(KERNEL_SIZE), .FRAC_BIT(FRAC_BIT)) uut
+    (
+        .clk(clk),
+        .reset(rstn),
+        .bias(adder_bias),
+        .weight_write(),
+        .write(),
+        .weights(weights),
+        .pixel_data(pixel_data),
+        .add_result(out)
+    );
+
+
+/*
 multiplier #(.KERNEL_SIZE(KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) uut
     (
         .weights(mult_weights),
@@ -90,5 +104,6 @@ adder_tree #(.DATA_WIDTH(16)) tree
         .data_in_24(mult_result[400:384]),
         .bias(adder_bias),
         .result(out)
-    );
+    );*/
+    
 endmodule
