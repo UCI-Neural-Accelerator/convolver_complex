@@ -5,7 +5,6 @@
 module datapath #(parameter DATA_WIDTH = 16, parameter KERNEL_SIZE = 5, parameter FRAC_BIT = 8) (
     // inputs
     input clk, reset,
-    input three_shift,
     input [DATA_WIDTH - 1:0] bias,
     input weight_write, write,
     input signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights, pixel_data,
