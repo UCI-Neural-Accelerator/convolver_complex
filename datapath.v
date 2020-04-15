@@ -1,67 +1,130 @@
 `timescale 1ns / 1ps
 
 
-
-module datapath #(parameter DATA_WIDTH = 16, parameter KERNEL_SIZE = 5, parameter FRAC_BIT = 8) (
-    // inputs
-    input clk, reset,
-    input [DATA_WIDTH - 1:0] bias,
-    input weight_write, write,
-    input signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights, pixel_data,
+module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter KERNEL_SIZE = 5, parameter IMAGE_SIZE = 28) (
+    
+	// inputs
+    input clk, reset, write
+    input signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights,
+    input signed [DATA_WIDTH - 1:0] pixel_input,
+	input [DATA_WIDTH - 1:0] bias,
+	
     // outputs
     output signed [DATA_WIDTH-1:0] add_result
-    );    
+    );
     
-//    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_0;
-//    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_1;
-//    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_2;
-    
+	// wires of the shift registers connected to multiplier
+	wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_0;
+	wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_1;
+	wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_2;
+	wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_3;
+	wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] w_data_out_4;
+
+	// wires of the intermediate shift registers
+	wire signed [DATA_WIDTH - 1:0] inter_out_0;
+	wire signed [DATA_WIDTH - 1:0] inter_in_1;
+	wire signed [DATA_WIDTH - 1:0] inter_out_1;
+	wire signed [DATA_WIDTH - 1:0] inter_in_2;
+	wire signed [DATA_WIDTH - 1:0] inter_out_2;
+	wire signed [DATA_WIDTH - 1:0] inter_in_3;
+	wire signed [DATA_WIDTH - 1:0] inter_out_3;
+	wire signed [DATA_WIDTH - 1:0] inter_in_4;
+
+    wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] inter_weights;
+    wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] pixel_data;	
     wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] m_result;
-    //wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] pixel_data;    
-    //wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights;     
-    
+      
     // concatenate shift register outputs for multiplier unit
-//    assign pixel_data = {w_data_out_0, w_data_out_1, w_data_out_2};
+	assign pixel_data = {w_data_out_0, w_data_out_1, w_data_out_2, w_data_out_3, w_data_out_4};
     
-    // don't know how to pass parameters into instantiated modules
-    // not to sure how to connect the shift registers, help jigar or ian?
-//    shift_register shift_register_0 (
-//            .shift_in(),
-//            .clock(clk),
-//            .reset(reset),
-//            .shift_out(w_shift_out),
-//            .data_out(w_data_out_0)
-//        );
+	
+    weight_register #(.N(KERNEL_SIZE**2), DATA_WIDTH(DATA_WIDTH)) weight_register_0 (
+            .reset(reset),
+            .clock(clk),
+            .write(write),
+            .weight_write(weights),
+            .weight_read(inter_weights)
+        );
+
+	shift_register #(.SIZE(KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) shift_register_0 (
+			.shift_in(pixel_input),
+			.clock(clk),
+			.reset(reset),
+			.shift_out(inter_out_0),
+			.data_out(w_data_out_0)
+		);
+		
+	shift_register #(.SIZE(KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) shift_register_1 (
+			.shift_in(inter_in_1),
+			.clock(clk),
+			.reset(reset),
+			.shift_out(inter_out_1),
+			.data_out(w_data_out_1)
+		);
+
+	shift_register #(.SIZE(KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) shift_register_2 (
+			.shift_in(inter_in_2),
+			.clock(clk),
+			.reset(reset),
+			.shift_out(inter_out_2),
+			.data_out(w_data_out_2)
+		);
+
+	shift_register #(.SIZE(KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) shift_register_3 (
+			.shift_in(inter_in_3),
+			.clock(clk),
+			.reset(reset),
+			.shift_out(inter_out_3),
+			.data_out(w_data_out_3)
+		);
+
+	shift_register #(.SIZE(KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) shift_register_4 (
+			.shift_in(inter_in_4),
+			.clock(clk),
+			.reset(reset),
+			.shift_out(),
+			.data_out(w_data_out_4)
+		);
+
+	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) inter_register_0 (
+			.shift_in(inter_out_0),
+			.clock(clk),
+			.reset(reset),
+			.shift_out(inter_in_1),
+			.data_out()
+		);
+
+	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) inter_register_1 (
+			.shift_in(inter_out_1),
+			.clock(clk),
+			.reset(reset),
+			.shift_out(inter_in_2),
+			.data_out)
+		);
+
+	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) inter_register_3 (
+			.shift_in(inter_out_2),
+			.clock(clk),
+			.reset(reset),
+			.shift_out(inter_in_3),
+			.data_out()
+		);
+
+	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) inter_register_4 (
+			.shift_in(inter_out_3),
+			.clock(clk),
+			.reset(reset),
+			.shift_out(inter_in_4),
+			.data_out()
+		);
+		
         
-//    shift_register shift_register_1 (
-//            .shift_in(w_shift_out),
-//            .clock(clk),
-//            .reset(reset),
-//            .shift_out(w_shift_out_1),
-//            .data_out(w_data_out_1)
-//        );
-        
-//     shift_register shift_register_2 (
-//            .shift_in(w_shift_out_1),
-//            .clock(clk),
-//            .reset(reset),
-//            .shift_out(),
-//            .data_out(w_data_out_2)
-//        );
-         
-//    weight_register weight_register_0 (
-//            .reset(reset),
-//            .clock(clk),
-//            .write(write),
-//            .weight_write(weight_write),
-//            .weight_read(weights)
-//        );
-        
-     multiplier #(.FRAC_BIT(FRAC_BIT)) multiplier_0 (
+     multiplier #(.FRAC_BIT(FRAC_BIT), DATA_WIDTH(DATA_WIDTH), KERNEL_SIZE(KERNEL_SIZE)) multiplier_0 (
             .weights(weights),
             .pixel_data(pixel_data),
+			
             .result(m_result)
-        );    
+        );
      
     adder_tree #(.DATA_WIDTH(DATA_WIDTH)) adder_tree_0 (
         .data_in_0( m_result[0*DATA_WIDTH +: DATA_WIDTH] ),
@@ -90,12 +153,8 @@ module datapath #(parameter DATA_WIDTH = 16, parameter KERNEL_SIZE = 5, paramete
         .data_in_23( m_result[23*DATA_WIDTH +: DATA_WIDTH] ),
         .data_in_24( m_result[24*DATA_WIDTH +: DATA_WIDTH] ),
         .bias(bias),
+		
         .result(add_result)        
-        );
-   
-    
-    
-    
-    
+        );  
     
 endmodule
