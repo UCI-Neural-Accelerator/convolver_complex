@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 
-module weight_register #(parameter DATA_WIDTH = 16, parameter N = 9) (
+module weight_register #(parameter DATA_WIDTH = 16, parameter N = 25) (
     // inputs
     input reset,
     input clock,

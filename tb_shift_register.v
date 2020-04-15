@@ -21,8 +21,9 @@
 
 
 module tb_shift_register();
-    parameter SIZE = 3;
-    parameter DATA_WIDTH = 32;
+
+    parameter SIZE = 5;
+    parameter DATA_WIDTH = 16;
     parameter CLK_PERIOD = 20;
     parameter RESET_DURATION = 100;
     parameter TEST_ITERATIONS = 10;

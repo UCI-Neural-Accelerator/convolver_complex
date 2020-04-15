@@ -21,7 +21,8 @@
 
 
 module tb_weight_register();
-    parameter N = 9;
+
+    parameter N = 25;
     parameter DATA_WIDTH = 16;
     parameter CLK_PERIOD = 20;
     parameter RESET_DURATION = 100;

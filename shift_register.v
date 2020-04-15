@@ -2,7 +2,7 @@
 
 // shift register
 // shifts right 1 position every clock cycle
-module shift_register #(parameter SIZE=3, parameter DATA_WIDTH=16) (
+module shift_register #(parameter SIZE=5, parameter DATA_WIDTH=16) (
     input [(DATA_WIDTH - 1):0] shift_in,  // value to be shifted in
     input clock,
     input reset,    // reset all registers to 0
