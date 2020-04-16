@@ -4,7 +4,7 @@
 module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter KERNEL_SIZE = 5, parameter IMAGE_SIZE = 28) (
     
 	// inputs
-    input clk, reset, write
+    input clk, reset, write,
     input signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights,
     input signed [DATA_WIDTH - 1:0] pixel_input,
 	input [DATA_WIDTH - 1:0] bias,
@@ -38,7 +38,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 	assign pixel_data = {w_data_out_0, w_data_out_1, w_data_out_2, w_data_out_3, w_data_out_4};
     
 	
-    weight_register #(.N(KERNEL_SIZE**2), DATA_WIDTH(DATA_WIDTH)) weight_register_0 (
+    weight_register #(.DATA_WIDTH(DATA_WIDTH), .N(KERNEL_SIZE**2)) weight_register_0 (
             .reset(reset),
             .clock(clk),
             .write(write),
@@ -46,7 +46,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
             .weight_read(inter_weights)
         );
 
-	shift_register #(.SIZE(KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) shift_register_0 (
+	shift_register #(.SIZE(KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) shift_register_0 (
 			.shift_in(pixel_input),
 			.clock(clk),
 			.reset(reset),
@@ -54,7 +54,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.data_out(w_data_out_0)
 		);
 		
-	shift_register #(.SIZE(KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) shift_register_1 (
+	shift_register #(.SIZE(KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) shift_register_1 (
 			.shift_in(inter_in_1),
 			.clock(clk),
 			.reset(reset),
@@ -62,7 +62,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.data_out(w_data_out_1)
 		);
 
-	shift_register #(.SIZE(KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) shift_register_2 (
+	shift_register #(.SIZE(KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) shift_register_2 (
 			.shift_in(inter_in_2),
 			.clock(clk),
 			.reset(reset),
@@ -70,7 +70,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.data_out(w_data_out_2)
 		);
 
-	shift_register #(.SIZE(KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) shift_register_3 (
+	shift_register #(.SIZE(KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) shift_register_3 (
 			.shift_in(inter_in_3),
 			.clock(clk),
 			.reset(reset),
@@ -78,7 +78,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.data_out(w_data_out_3)
 		);
 
-	shift_register #(.SIZE(KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) shift_register_4 (
+	shift_register #(.SIZE(KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) shift_register_4 (
 			.shift_in(inter_in_4),
 			.clock(clk),
 			.reset(reset),
@@ -86,7 +86,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.data_out(w_data_out_4)
 		);
 
-	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) inter_register_0 (
+	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) inter_register_0 (
 			.shift_in(inter_out_0),
 			.clock(clk),
 			.reset(reset),
@@ -94,15 +94,15 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.data_out()
 		);
 
-	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) inter_register_1 (
+	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) inter_register_1 (
 			.shift_in(inter_out_1),
 			.clock(clk),
 			.reset(reset),
 			.shift_out(inter_in_2),
-			.data_out)
+			.data_out()
 		);
 
-	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) inter_register_3 (
+	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) inter_register_3 (
 			.shift_in(inter_out_2),
 			.clock(clk),
 			.reset(reset),
@@ -110,7 +110,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.data_out()
 		);
 
-	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), DATA_WIDTH(DATA_WIDTH)) inter_register_4 (
+	shift_register #(.SIZE(IMAGE_SIZE-KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) inter_register_4 (
 			.shift_in(inter_out_3),
 			.clock(clk),
 			.reset(reset),
@@ -119,7 +119,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 		);
 		
         
-     multiplier #(.FRAC_BIT(FRAC_BIT), DATA_WIDTH(DATA_WIDTH), KERNEL_SIZE(KERNEL_SIZE)) multiplier_0 (
+     multiplier #(.FRAC_BIT(FRAC_BIT), .DATA_WIDTH(DATA_WIDTH), .KERNEL_SIZE(KERNEL_SIZE)) multiplier_0 (
             .weights(weights),
             .pixel_data(pixel_data),
 			
