@@ -30,7 +30,7 @@ module tb_controlpath();
    
     // Inputs
     reg clk;
-	reg rstn;
+    reg reset;
     
     // Output
     wire w_enable;
@@ -40,17 +40,23 @@ module tb_controlpath();
     controlpath #(.KERNEL_SIZE(KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH), .IMAGE_SIZE(IMAGE_SIZE)) uut
     (
         .clk(clk),
-        .rstn(rstn),
+        .reset(reset),
         .enable(w_enable)
     );
 
-    initial
+    always
     begin
         clk = 0;
-        rstn = 0;
-        #100
-        rstn = 1;
-        forever #20 clk = ~clk;
+	#10;
+	clk = 1;
+	#10;
+    end
+
+    initial
+    begin
+	reset = 1; //It needs to be reset for working properly; counter initialization before comparison.
+	#20;
+        reset = 0;
     end
 
 endmodule

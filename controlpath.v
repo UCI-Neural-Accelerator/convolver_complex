@@ -92,48 +92,53 @@ endmodule
 
 module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, parameter KERNEL_SIZE = 5) (
         input wire clk,
-        input wire rstn,
+        input wire reset,
         
-        output wire enable
+        output reg enable
     );
     
-	
 	reg [6:0] counter;
-	reg [4:0] conv_rows;
+	reg [4:0] counter_rows;
 	
 	localparam STATE_Initial = 2'd0,
-				STATE_1 = 2'd1,
-				STATE_2 = 2'd2,
-				STATE_3_PlaceHolder = 2'd3;
+		   STATE_1 = 2'd1,
+		   STATE_2 = 2'd2,
+		   STATE_3_PlaceHolder = 2'd3;
 
 	reg[1:0] CurrentState;
 	reg[1:0] NextState;
 	
 	
-	/* ALTERNATIVE OUTPUT APPROACH
 	always@( * ) begin
 		enable = 1'd0;
 		case(CurrentState)
 			STATE_1: begin 
 				enable = 1'd1;
 			end
+			//STATE_3: begin
+				//enable = 1'bz; //ONLY FOR TESTING
+			//end
 		endcase
 	end
-	*/
-	
-	assign enable = (CurrentState == STATE_1);
+
+	//ALTERNATIVE APPROACH FOR WIRE AND UNIDIMENSIONAL VARIABLE
+	//assign enable = (CurrentState == STATE_1);
 
 
-    always@(posedge clk or negedge rstn) begin
-        if (~rstn) begin
+    	always@(posedge clk or posedge reset) begin
+        	if (reset) begin
 			CurrentState <= STATE_Initial;
 			counter <= 7'd0;
+			counter_rows <= 5'd0;
 		end
-        else begin
+        	else begin
 			CurrentState <= NextState;
 			counter <= counter + 1'd1;
+			if (enable == 1'd0) begin
+				if (counter == 1'd0) counter_rows <= counter_rows + 1'd1;
+			end
 		end                
-    end
+   	end
 	
 	
 	always@( * ) begin
@@ -152,16 +157,22 @@ module controlpath #(parameter DATA_WIDTH = 16, parameter IMAGE_SIZE = 28, param
 				end
 			end
 			STATE_2: begin
-				if (counter == (KERNEL_SIZE)) begin 
+				if (counter == (KERNEL_SIZE-1)) begin 
 					NextState = STATE_1;
+					counter = 7'd0;
+				end
+				else if (counter_rows == ((IMAGE_SIZE-KERNEL_SIZE+1)+1)) begin 
+					NextState = STATE_Initial;
+					counter_rows = 7'd0;
 					counter = 7'd0;
 				end
 			end
 			STATE_3_PlaceHolder: begin
 				NextState = STATE_Initial;
+				counter_rows = 7'd0;
+				counter = 7'd0;
 			end
 		endcase
 	end
-
 
 endmodule

@@ -1,16 +1,11 @@
 `timescale 1ns / 1ps
 
-
 module tb_datapath();
 
-	parameter DATA_WIDTH = 16;
+    parameter DATA_WIDTH = 16;
     parameter FRAC_BIT = 8;
     parameter KERNEL_SIZE = 5;
     parameter IMAGE_SIZE = 28;
-	
-//    parameter CLK_PERIOD = 20;
-//    parameter TEST_ITERATIONS = 10;
-//    parameter sf = 2.0 ** -8.0;
 	
     // Inputs
     reg clk;
@@ -18,47 +13,52 @@ module tb_datapath();
     reg write;
     reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] r_weights;
     reg signed [DATA_WIDTH - 1:0] r_pixel_input;
-    reg signed [DATA_WIDTH - 1:0] bias;
-	
-//    reg signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] rand_weight, rand_pixel;
-//    reg signed [DATA_WIDTH - 1:0] rand_bias;
+    reg signed [DATA_WIDTH - 1:0] r_bias;
     
     // Output
     wire signed [DATA_WIDTH - 1:0] final_result;
+    // Outputs for verification
+    wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] s_weights_out;
+    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_0;
+    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_1;
+    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_2;
+    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_3;
+    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_4;
+    wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] s_mult_result;
    
     datapath #(.DATA_WIDTH(DATA_WIDTH),.KERNEL_SIZE(KERNEL_SIZE), .FRAC_BIT(FRAC_BIT)) datapath (
         .clk(clk),
         .reset(reset),
-		.write(write),
-        .bias(bias),
+	.write(write),
+        .bias(r_bias),
         .weights(r_weights),
         .pixel_input(r_pixel_input),
-        .add_result(final_result)
+        .add_result(final_result),
+        .weights_out(s_weights_out),
+        .data_out_0(s_data_out_0),
+        .data_out_1(s_data_out_1),
+        .data_out_2(s_data_out_2),
+        .data_out_3(s_data_out_3),
+        .data_out_4(s_data_out_4),
+        .mult_result(s_mult_result)
     );
 
-//        #(CLK_PERIOD / 2);        
-        
-//        if (final_result == 16'h3200)
-//        begin
-//            $display(" Successfully added. Result: %d\n", final_result * sf);
-       
-//        end
-//        else
-//        begin
-//            $display("Failed to add. Result: %d\n", final_result * sf);
-
-//        end
+    always
+    begin
+        clk = 0;
+	#10;
+	clk = 1;
+	#10;
+    end
 
     initial
     begin
-        clk = 0;
         write = 1;
-        reset = 1;
-        #100
+    end
+
+    initial
+    begin
         reset = 0;
-       
-        forever #20 clk = ~clk;
-    
     end
 
     integer i;
@@ -67,17 +67,21 @@ module tb_datapath();
     
         for ( i = 0; i < KERNEL_SIZE**2; i = i + 1)
         begin
-            r_weights[i*DATA_WIDTH +: DATA_WIDTH] = 16'b00000001_00000000;  
+            r_weights[i*DATA_WIDTH +: DATA_WIDTH] = 16'b00000001_10000000;  
         end
     
     end
     
-    integer j;
     initial
     begin
-    
-        bias = 16'h0000;
-        r_pixel_input = 16'b00000001_00000000;
+        r_bias = 16'h0000;
+    end
+
+//    integer j;
+    initial
+    begin
+
+        r_pixel_input = 16'b00000001_10000000;
 
 //        for ( j = 0; j < KERNEL_SIZE; j = j + 1)
 //        begin

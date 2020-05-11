@@ -14,13 +14,13 @@ module shift_register #(parameter SIZE=5, parameter DATA_WIDTH=16) (
     
     // Register reg
     reg [(DATA_WIDTH - 1):0] data [(SIZE - 1):0];   // internal registers to hold the data values
-    reg [(DATA_WIDTH - 1):0] shift_out_reg;
+    //reg [(DATA_WIDTH - 1):0] shift_out_reg;
     
     // Non-register reg
     
     
     // Assignments
-    assign shift_out = shift_out_reg;   // connect shift out to value
+    assign shift_out = data[SIZE - 1];   // connect shift out to value
     // assign the data registers to the flattened outputs
     genvar geni;
     generate
@@ -36,6 +36,7 @@ module shift_register #(parameter SIZE=5, parameter DATA_WIDTH=16) (
         // asynchronous reset
         if (reset)
         begin
+	    //shift_out_reg <= 0;
             // clear all internal data registers
             for (i = 0; i < SIZE; i = i + 1)
             begin
@@ -44,7 +45,7 @@ module shift_register #(parameter SIZE=5, parameter DATA_WIDTH=16) (
         end
         else    // normal operation
         begin
-            shift_out_reg <= data[SIZE - 1];    // shift out the most significant register
+    	    //shift_out_reg = data[SIZE - 1];    // shift out the most significant register
             for (i = (SIZE - 1); i > 0; i = i - 1) // shift the rest of the registers
             begin
                 data[i] <= data[i - 1];
