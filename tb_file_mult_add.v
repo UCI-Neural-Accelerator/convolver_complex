@@ -8,7 +8,7 @@ parameter DATA_WIDTH = 16;
 parameter FRAC_BIT = 8;
 
 parameter HALF_CLK_DURATION = 10;
-parameter RESET_DURATION = 20;
+parameter RESET_DURATION = 5;
 
 reg clk;
 reg reset;
@@ -36,7 +36,7 @@ end
 
 initial begin
     write = 'd0;
-    #(HALF_CLK_DURATION);
+    #(RESET_DURATION);
     write = 'd1;
 end
 
@@ -54,7 +54,7 @@ initial begin
     file_weights = $fopen("input_weights.txt", "r");
     for(index = 0; index < (KERNEL_SIZE**2); index = index + 1) begin
         $fscanf(file_weights, "%b\n", tmp_weight);
-        in_weights[index*DATA_WIDTH +: DATA_WIDTH] = tmp_weight;
+        in_weights[(24-index)*DATA_WIDTH +: DATA_WIDTH] = tmp_weight; 
     end
 end
 
