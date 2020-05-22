@@ -19,17 +19,17 @@ module tb_conv_complex();
     wire signed [DATA_WIDTH - 1:0] w_conv_final_result;
     wire w_enable_signal;
     // Outputs for verification
-    wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] s_weights_out;
-    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_0;
-    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_1;
-    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_2;
-    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_3;
-    wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_4;
-    wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] s_mult_result;
-    wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] s_data_hold_0;
-    wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] s_data_hold_1;
-    wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] s_data_hold_2;
-    wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] s_data_hold_3;
+    //wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] s_weights_out;
+    //wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_0;
+    //wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_1;
+    //wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_2;
+    //wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_3;
+    //wire signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] s_data_out_4;
+    //wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] s_mult_result;
+    //wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] s_data_hold_0;
+    //wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] s_data_hold_1;
+    //wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] s_data_hold_2;
+    //wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] s_data_hold_3;
 
     convolver_complex #(.DATA_WIDTH(DATA_WIDTH), .KERNEL_SIZE(KERNEL_SIZE), .FRAC_BIT(FRAC_BIT), .IMAGE_SIZE(IMAGE_SIZE)) uut (
         .clk(clk),
@@ -39,18 +39,18 @@ module tb_conv_complex();
         .pixel_in(r_pixel_in),
         .bias(r_bias),
         .conv_final_result(w_conv_final_result),
-	.enable_signal(w_enable_signal),
-        .v_weights_out(s_weights_out),
-        .v_data_out_0(s_data_out_0),
-        .v_data_out_1(s_data_out_1),
-        .v_data_out_2(s_data_out_2),
-        .v_data_out_3(s_data_out_3),
-        .v_data_out_4(s_data_out_4),
-        .v_mult_result(s_mult_result),
-        .v_data_hold_0(s_data_hold_0),
-        .v_data_hold_1(s_data_hold_1),
-        .v_data_hold_2(s_data_hold_2),
-        .v_data_hold_3(s_data_hold_3)
+	.enable_signal(w_enable_signal)
+        //.v_weights_out(s_weights_out),
+        //.v_data_out_0(s_data_out_0),
+        //.v_data_out_1(s_data_out_1),
+        //.v_data_out_2(s_data_out_2),
+        //.v_data_out_3(s_data_out_3),
+        //.v_data_out_4(s_data_out_4),
+        //.v_mult_result(s_mult_result),
+        //.v_data_hold_0(s_data_hold_0),
+        //.v_data_hold_1(s_data_hold_1),
+        //.v_data_hold_2(s_data_hold_2),
+        //.v_data_hold_3(s_data_hold_3)
     );
 
 
@@ -72,7 +72,7 @@ module tb_conv_complex();
     initial
     begin
 	reset = 1;
-	#20;
+	#5;
         reset = 0;
     end
 
