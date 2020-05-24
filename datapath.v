@@ -9,19 +9,19 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
     	input [DATA_WIDTH - 1:0] bias,
 	
     	// outputs
-    	output signed [DATA_WIDTH-1:0] add_result,
-	// outputs for verification
-	output signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] data_out_0,
-	output signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] data_out_1,
-	output signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] data_out_2,
-	output signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] data_out_3,
-	output signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] data_out_4,
+    	output signed [DATA_WIDTH-1:0] add_result
+		// outputs for verification
+/* 		output signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] data_out_0,
+		output signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] data_out_1,
+		output signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] data_out_2,
+		output signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] data_out_3,
+		output signed [ (KERNEL_SIZE*DATA_WIDTH)- 1:0] data_out_4,
     	output signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] weights_out,
     	output signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] mult_result,
         output wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] data_hold_0,
         output wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] data_hold_1,
     	output wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] data_hold_2,
-    	output wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] data_hold_3
+    	output wire signed [ ((IMAGE_SIZE-KERNEL_SIZE)*DATA_WIDTH)- 1:0] data_hold_3 */
     );
     
 	// wires of the shift registers connected to multiplier
@@ -41,31 +41,31 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 	wire signed [DATA_WIDTH - 1:0] inter_out_3;
 	wire signed [DATA_WIDTH - 1:0] inter_in_4;
 
-    	wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] inter_weights;
-    	wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] pixel_data;	
-    	wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] m_result;
-      
-    	// concatenate shift register outputs for multiplier unit
-    	assign pixel_data = {w_data_out_4, w_data_out_3, w_data_out_2, w_data_out_1, w_data_out_0};
+	wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] inter_weights;
+	wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] pixel_data;	
+	wire signed [(KERNEL_SIZE**2)*DATA_WIDTH - 1:0] m_result;
+  
+	// concatenate shift register outputs for multiplier unit
+	assign pixel_data = {w_data_out_4, w_data_out_3, w_data_out_2, w_data_out_1, w_data_out_0};
 
 	// assign for verification
-	assign weights_out = inter_weights;
+/* 	assign weights_out = inter_weights;
 	assign data_out_0 = w_data_out_0;
 	assign data_out_1 = w_data_out_1;
 	assign data_out_2 = w_data_out_2;
 	assign data_out_3 = w_data_out_3;
 	assign data_out_4 = w_data_out_4;
-	assign mult_result = m_result;
+	assign mult_result = m_result; */
 
 	parameter INTER_SIZE = (IMAGE_SIZE - KERNEL_SIZE);
     
-    	weight_register #(.DATA_WIDTH(DATA_WIDTH), .N(KERNEL_SIZE**2)) weight_register_0 (
-            .reset(reset),
-            .clock(clk),
-            .write(write),
-            .weight_write(weights),
-            .weight_read(inter_weights)
-        );
+	weight_register #(.DATA_WIDTH(DATA_WIDTH), .N(KERNEL_SIZE**2)) weight_register_0 (
+		.reset(reset),
+		.clock(clk),
+		.write(write),
+		.weight_write(weights),
+		.weight_read(inter_weights)
+	);
 
 	shift_register #(.SIZE(KERNEL_SIZE), .DATA_WIDTH(DATA_WIDTH)) shift_register_0 (
 			.shift_in(pixel_input),
@@ -112,7 +112,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.clock(clk),
 			.reset(reset),
 			.shift_out(inter_in_1),
-			.data_out(data_hold_0)
+			.data_out()
 		);
 
 	shift_register #(.SIZE(INTER_SIZE), .DATA_WIDTH(DATA_WIDTH)) inter_register_1 (
@@ -120,7 +120,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.clock(clk),
 			.reset(reset),
 			.shift_out(inter_in_2),
-			.data_out(data_hold_1)
+			.data_out()
 		);
 
 	shift_register #(.SIZE(INTER_SIZE), .DATA_WIDTH(DATA_WIDTH)) inter_register_2 (
@@ -128,7 +128,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.clock(clk),
 			.reset(reset),
 			.shift_out(inter_in_3),
-			.data_out(data_hold_2)
+			.data_out()
 		);
 
 	shift_register #(.SIZE(INTER_SIZE), .DATA_WIDTH(DATA_WIDTH)) inter_register_3 (
@@ -136,7 +136,7 @@ module datapath #(parameter DATA_WIDTH = 16, parameter FRAC_BIT = 8, parameter K
 			.clock(clk),
 			.reset(reset),
 			.shift_out(inter_in_4),
-			.data_out(data_hold_3)
+			.data_out()
 		);
 		
         
